@@ -1,5 +1,6 @@
 package com.kimi.room
 
+import android.os.AsyncTask
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -15,14 +16,20 @@ class MainActivity : AppCompatActivity() {
 
         // Room Test
 
-        val database = Room.databaseBuilder(this, GameDatabase::class.java, "game.db").build()
-
         val record = Record("Jack", 3)
 
         Thread {
-            database.recordDao().insert(record)
-            Log.d("kimi", "kimi: ${database.recordDao().getAll().size}")
+            GameDatabase.getInstance(this)?.recordDao()?.insert(record)
+
+
         }.start()
+
+        AsyncTask.execute {
+            val list = GameDatabase.getInstance(this)?.recordDao()?.getAll()
+            list?.forEach {
+                Log.d("kimi", "kimi: ${it.nickname}, ${it.id}")
+            }
+        }
 
     }
 }
